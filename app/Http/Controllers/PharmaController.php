@@ -27,14 +27,6 @@ class PharmaController extends Controller
 
 
 
-
-
-
-
-
-
-
-
     public function index(Request $request)
     {
 

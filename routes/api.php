@@ -25,8 +25,6 @@ use App\Http\Controllers\PaymentRequestController;
 
 
 Route::group(['middleware' => ['api']], function () {
-
-
     Route::post('login', [UserController::class,'login']);
 });
 

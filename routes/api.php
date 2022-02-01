@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\PharmaController;
 use LdapRecord\Models\ActiveDirectory\User;
+use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\PaymentRequestController;
 
 
 
@@ -26,6 +28,13 @@ Route::group(['middleware' => ['api']], function () {
 
 
     Route::post('login', [UserController::class,'login']);
+});
+
+
+
+
+Route::group(['middleware' => ['auth', 'verified']], function () {
+
 
     Route::get('/pharmacies', [PharmaController::class,'getall']);
     Route::post('/pharmacies', [PharmaController::class,'index']);
@@ -46,76 +55,6 @@ Route::group(['middleware' => ['api']], function () {
     Route::put('/payment_request/{id}', [PaymentRequestController::class,'update']);
     Route::delete('/payment_request/{id}', [PaymentRequestController::class,'destroy']);
     Route::post('/newPaymentRdr', [PaymentRequestController::class,'newPaymentRdr']);
-});
-
-
-
-
-Route::group(['middleware' => ['auth', 'verified']], function () {
-
-
-    // Route::get('/', function () {
-    //     return Route::app->version();
-    // });
-
-    Route::get('/test', function () {
-
-        $ldapDomain = "@ccm.local"; 			// set here your ldap domain
-        $ldapHost = "ldap://ldap.ieo.it"; 	// set here your ldap host
-        $ldapPort = "389"; 						// ldap Port (default 389)
-        $ldapUser  = "f.castiglioni"; 						// ldap User (rdn or dn)
-        $ldapPassword = 'Ot732$ccm'; 					// ldap associated Password
-
-        $successMessage = "";
-        $errorMessage = "";
-
-       // connect to ldap server
-        $ldapConnection = ldap_connect($ldapHost, $ldapPort)
-        or die("Could not connect to Ldap server.");
-        if ($ldapConnection)
-        {
-            // binding to ldap server
-            $ldapbind = @ldap_bind($ldapConnection, $ldapUser.$ldapDomain, $ldapPassword);
-
-            // verify binding
-            if ($ldapbind)
-            {
-                return "LDAP bind successful...";
-            }
-            else
-            {
-                return "LDAP bind failed...";
-            }
-        }else {
-            return "errore connection";
-        }
-        ldap_set_option($ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
-        ldap_set_option($ldapConnection, LDAP_OPT_REFERRALS, 0);
-        $ldapbind = @ldap_bind($ldapConnection, $ldapUser.$ldapDomain , $ldapPassword);
-        if ($ldapbind){
-            ldap_close($ldapConnection);	// close ldap connection
-            return "Login done correctly!!";
-        }
-        else
-            return "Invalid credentials!";
-
-
-
-        /*try {
-            $ldapUsers =  User::get();
-            return $ldapUsers;
-
-        } catch (Exception $e) {
-
-            return '<pre>'.$e.'</pre>';
-        }*/
-    });
-
-
-
-
-
-
 
 
 });
